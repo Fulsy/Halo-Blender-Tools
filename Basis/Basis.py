@@ -1132,7 +1132,7 @@ def register():
     bpy.types.Scene.uvwEnabled_bool = bpy.props.BoolProperty(name="Import UVs", description="Import model's UV mapping", default=True)
     bpy.types.Scene.attachEnabled_bool = bpy.props.BoolProperty(name="Attach meshes within region", description="Test", default=True)
     bpy.types.Scene.matEnabled_bool = bpy.props.BoolProperty(name="Set Up Materials", description="Import material names", default=True)
-    bpy.types.Scene.nodesEnabled_bool = bpy.props.BoolProperty(name="Import Node Graph", description="Import model's nodes", default=True)
+    bpy.types.Scene.nodesEnabled_bool = bpy.props.BoolProperty(name="Import Nodes", description="Import model's nodes", default=True)
     bpy.types.Scene.nodeSize_float = bpy.props.FloatProperty(name="Size", subtype='UNSIGNED', description="Set size of nodes", default=2.0, min=0.01)
     bpy.types.Scene.nodeColor = bpy.props.FloatVectorProperty(name="Color", subtype='COLOR', description="Set color of nodes", default=(0.0,1.0,0.0))
     bpy.types.Scene.weightsEnabled_bool = bpy.props.BoolProperty(name="Import vertex weights", description="Import model's vertex weights", default=True)
