@@ -1,4 +1,4 @@
-#WALTZSTREET SCRIPT START LOL!
+
 #<!--
 #
 #                                                    ___
@@ -182,26 +182,14 @@ class ExportJMS(Operator, ExportHelper):
             default="*.jms",
             options={'HIDDEN'},
             )
+            
 
-    use_setting = BoolProperty(
-            name="Example Boolean",
-            description="Example Tooltip",
-            default=True,
-            )
-
-    type = EnumProperty(
-            name="Example Enum",
-            description="Choose between two items",
-            items=(('OPT_A', "First Option", "Description one"),
-                   ('OPT_B', "Second Option", "Description two")),
-            default='OPT_A',
-            )
 
     def execute(self, context):
-        return export_jms(context, self.filepath, self.use_setting)
+        return export_jms(context, self.filepath)
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportJMS.bl_idname, text="Gbxmodel (.jms)")
+    self.layout.operator(ExportJMS.bl_idname, text="Halo CE JMS file (.jms)")
 
 
 def register():
@@ -220,7 +208,7 @@ if __name__ == "__main__":
 
 
 
-def export_jms(context, filepath, use_some_setting):
+def export_jms(context, filepath):
     layersSelected=[]
     scene=bpy.context.scene
     blenderscale=bpy.context.scene.unit_settings.scale_length
@@ -253,7 +241,8 @@ def export_jms(context, filepath, use_some_setting):
     
     
     #THE SORTING OF STUFF!
-    print("WaltsStreet script start")
+    #Picks out all markers, nodes, and mesh objects in the scene, and puts them into appropriate lists.
+    print("Script start")
     print("selecting all layers")
     layersSelected=select_all_layers()
     print("sorting out all items...")
@@ -320,12 +309,13 @@ def export_jms(context, filepath, use_some_setting):
     try:
         regionslist[0]
     except:
-        bpy.ops.group.create(name="unnamend")
+        bpy.ops.group.create(name="unnamed")
         regionslist.append(bpy.data.groups["unnamed"])
 
 
 
     #THE REAL FUN BEGINS!
+    #Prepare mesh object for exporting.
     print("converting geometry object to mesh...")
     deselect()
     for obj in geometrylist:
