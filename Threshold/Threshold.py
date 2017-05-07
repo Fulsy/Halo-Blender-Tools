@@ -14,12 +14,13 @@
 #
 #-->
 
+#The loljet can stay. -Fulsy
 
 
 
 #INFORMATION!
 bl_info = {
-    "name": "HBT WaltzStreet .JMS Exporter",
+    "name": "HBT Threshold .JMS Exporter",
     "author": "Original WaltzStreet script by Cyboryxmen, Modified by Fulsy",
     "blender": (2, 6, 5),
     "location": "File > Import-Export",
@@ -108,59 +109,8 @@ def deselect_layers(y):
         bpy.context.scene.layers[x]=bool
         x+=1
 
-def throw_exception(failmessage, info):
-    print("ERROR!")
-    print("ERROR!")
-    print("ERRPR!")
-    print("ERROR!")
-    if failmessage==0:
-        print("Error message:00")
-        
-        print("please link all nodes to one object!")
-    if failmessage==1:
-        print("Error message:01")
-        
-        print("there were no nodes detected!\
-        please make at least one node in the scene!")
-    if failmessage==2:
-        print("Error message:02")
-        
-        print("there were no geometry to be exported. please link all\
-        geometry to a single node!")
-    if failmessage==3:
-        print("Error message:03")
-        
-        print("an open edge was detected when checking object:"\
-        + info)
-    if failmessage==4:
-        print("Error message:04")
-        
-        print("you forgot to assign a material to geometry object:" + info)
-    if failmessage==5:
-        print("Error message:05")
-        
-        print("The file export was uncucessful")
-    if failmessage==6:
-        print("Error message:06")
-        
-        print("You linked object {} to more than 1 region".format(obj))
-    if failmessage==7:
-        print("Error message:07")
-        
-    if failmessage==8:
-        print("Error message:08")
-        
-    if failmessage==9:
-        print("Error message:09")
-        
-    if failmessage==10:
-        print("Error message:10")
-        
-    if failmessage==11:
-        print("Error message:11")
-        
-    print("")
-    raise NameError
+
+    
 
 
 
@@ -171,7 +121,7 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
 
-
+#This operator is the main flow control setup. It's also responsible for the file browser.
 class ExportJMS(Operator, ExportHelper):
     bl_idname = "export_jms.export"
     bl_label = "Export JMS"
@@ -186,8 +136,9 @@ class ExportJMS(Operator, ExportHelper):
 
 
     def execute(self, context):
-        return export_jms(context, self.filepath)
+        return export_jms(self, self.filepath)
 
+#This allows the operator to appear in the import/export menu
 def menu_func_export(self, context):
     self.layout.operator(ExportJMS.bl_idname, text="Halo CE JMS file (.jms)")
 
@@ -207,8 +158,62 @@ if __name__ == "__main__":
 
 
 
+#Beginning of the export function
+def export_jms(opinstance, filepath):
 
-def export_jms(context, filepath):
+    def throw_exception(failmessage, info):
+        print("Threshold Error!")
+        if failmessage==0:
+            
+            opinstance.report({'ERROR'}, "Please link all nodes to one object!. Error Type: 00")
+            
+            print("Error message:00")
+            
+            print("please link all nodes to one object!")
+        
+        if failmessage==1:
+            
+            opinstance.report({'ERROR'}, "Frame node is missing. Error Type: 01")
+
+        if failmessage==2:
+            
+            opinstance.report({'ERROR'}, "There were no geometry to be exported. Please link all geometry to a single node! Error Type: 02")
+
+        if failmessage==3:
+            print("Error message:03")
+            
+            print("an open edge was detected when checking object:"\
+            + info)
+        if failmessage==4:
+            print("Error message:04")
+            
+            print("you forgot to assign a material to geometry object:" + info)
+        if failmessage==5:
+            print("Error message:05")
+            
+            print("The file export was uncuckcessful")
+        if failmessage==6:
+            print("Error message:06")
+            
+            print("You linked object {} to more than 1 region".format(obj))
+        if failmessage==7:
+            print("Error message:07")
+            
+        if failmessage==8:
+            print("Error message:08")
+            
+        if failmessage==9:
+            print("Error message:09")
+            
+        if failmessage==10:
+            print("Error message:10")
+            
+        if failmessage==11:
+            print("Error message:11")
+            
+        print("")
+        
+
     layersSelected=[]
     scene=bpy.context.scene
     blenderscale=bpy.context.scene.unit_settings.scale_length
@@ -220,13 +225,20 @@ def export_jms(context, filepath):
     scale=Decimal(haloscale/blenderscale)
     mainframe="lol what frame?"
     directory=""
+    
     nodeslist=[]
+    
     materialslist=[]
     texturedirectory="<none>"
+    
     markerslist=[]
+    
     geometrylist=[]
+    
     mesheslist=[]
+    
     regionslist=["unnamed"]
+    
     vertslist=[]
     vertnodes=[]
     vertweights=[]
@@ -258,6 +270,7 @@ def export_jms(context, filepath):
                 
     if len(nodeslist)==0:
         throw_exception(1, "lol")
+        return {'CANCELLED'}
 
     for node in nodeslist:  
         if status!="a complete total failure!":
@@ -266,11 +279,14 @@ def export_jms(context, filepath):
             mainframe=status
         else:                                                                                                    
             throw_exception(0, "lol")
+            return {'CANCELLED'}
 
     try:
         print("current mainframe:" + mainframe.name)
     except:
         throw_exception(0, "lol")
+        return {'CANCELLED'}
+        
     print("current mainframe:" + mainframe.name)
     del nodeslist[nodeslist.index(mainframe)]
     nodeslist.insert(0, mainframe)
@@ -293,6 +309,8 @@ def export_jms(context, filepath):
 
     if len(geometrylist)==0:
         throw_exception(2, "lol")
+        return {'CANCELLED'}
+        
 
     print("gathering materials...")
     for obj in geometrylist:
@@ -302,6 +320,7 @@ def export_jms(context, filepath):
                     materialslist.append(slot.material)
         else:
             throw_exception(4, obj.name)
+            return {'CANCELLED'}
     
     print("gathering regions...")
     for group in bpy.data.groups:
@@ -410,7 +429,7 @@ def export_jms(context, filepath):
     print("")
     print("")
 
-    
+#Actual writing to file begins here.    
     
     f = open(filepath, 'w')
     f.write("{}\n".format(versionnumber))
@@ -540,5 +559,5 @@ def export_jms(context, filepath):
 #memo
 #   support for bones not yet implemented
 #   export regions not yet implemented
-#   experiment on sealed world rules
-#   test if scale is correct
+
+
